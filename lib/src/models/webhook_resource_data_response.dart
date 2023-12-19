@@ -476,13 +476,17 @@ class MatiWebhookResourceDataStep extends Equatable {
       MatiWebhookResourceDataStep(
         status: json['status'] as int?,
         id: json['id'] as String?,
-        data:
-            json['data'] == null ? null : StepData.fromMap(json['data'] as Map),
+        data: json['data'] == null
+            ? null
+            : json['data'] is Map
+                ? StepData.fromMap(json['data'] as Map)
+                : json['data'] is List
+                    ? StepData.fromMap(json['data'][0] as Map)
+                    : null,
         error: json['error'] == null
             ? null
             : MatiError.fromMap(json['error'] as Map),
       );
-
   final int? status;
   final String? id;
   final StepData? data;

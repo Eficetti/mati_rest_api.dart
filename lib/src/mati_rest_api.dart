@@ -72,7 +72,7 @@ class MatiRestApi implements MatiRestApiBase {
   Future<MatiResponse> getWebhookResourceData(String verificationId) async {
     final uri = Uri.https(
       authority,
-      '/v2/verifications/$verificationId',
+      '/v2/verifications/65809f66181c09001c916233',
     );
 
     final response = await _httpClient.get(
@@ -106,4 +106,17 @@ class MatiRestApi implements MatiRestApiBase {
   /// Whether the token is valid or not.
   @visibleForTesting
   bool get validToken => token != null && !JwtDecoder.isExpired(token!);
+}
+
+void main() async {
+  final matiRestApi = MatiRestApi(
+    clientId: '61a53de275cbaf001b27128e',
+    clientSecret: '5GZY6Q6GGBT9QF5ZAGNAE4KRGGCK2Y9A',
+  );
+
+  final s = await matiRestApi.getWebhookResourceData(
+    '65809f66181c09001c916233',
+  );
+
+  print(s);
 }
