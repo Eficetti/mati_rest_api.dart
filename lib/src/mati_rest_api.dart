@@ -72,7 +72,7 @@ class MatiRestApi implements MatiRestApiBase {
   Future<MatiResponse> getWebhookResourceData(String verificationId) async {
     final uri = Uri.https(
       authority,
-      '/v2/verifications/65809f66181c09001c916233',
+      '/v2/verifications/$verificationId',
     );
 
     final response = await _httpClient.get(
