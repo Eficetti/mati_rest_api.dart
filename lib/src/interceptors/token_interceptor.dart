@@ -101,12 +101,12 @@ class TokenInterceptor implements InterceptorContract {
   }
 
   @override
-  Future<bool> shouldInterceptRequest() {
-    throw UnimplementedError();
+  Future<bool> shouldInterceptRequest() async {
+    return true;
   }
 
   @override
-  Future<bool> shouldInterceptResponse() {
-    throw UnimplementedError();
+  Future<bool> shouldInterceptResponse() async {
+    return true;
   }
 }
