@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:http_interceptor/http_interceptor.dart' as http_interceptor;
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:mati_rest_api/mati_rest_api.dart';
 import 'package:meta/meta.dart';
 
@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Checks the environment for this version of the app,
 /// and sets the authority accordingly.
 /// {@endtemplate}
-class TokenInterceptor implements http_interceptor.InterceptorContract {
+class TokenInterceptor implements InterceptorContract {
   /// {@macro environment_checker}
   TokenInterceptor({
     required this.shouldUpdateToken,
@@ -39,27 +39,27 @@ class TokenInterceptor implements http_interceptor.InterceptorContract {
   final String clientSecret;
 
   @override
-  Future<http_interceptor.RequestData> interceptRequest({
-    required http_interceptor.RequestData data,
+  Future<BaseRequest> interceptRequest({
+    required BaseRequest request,
   }) async {
     final shouldUpdate = shouldUpdateToken();
     if (!shouldUpdate) {
-      return data;
+      return request;
     }
 
     final token = await updateToken();
     if (token is MatiAuthenticationResponse) {
-      data.headers['Authorization'] = 'Bearer ${token.accessToken}';
+      request.headers['Authorization'] = 'Bearer ${token.accessToken}';
     }
 
-    return data;
+    return request;
   }
 
   @override
-  Future<http_interceptor.ResponseData> interceptResponse({
-    required http_interceptor.ResponseData data,
+  Future<BaseResponse> interceptResponse({
+    required BaseResponse response,
   }) async =>
-      data;
+      response;
 
   /// Use your client_id and client_secret as your username
   /// and password to get your access token.
@@ -98,5 +98,15 @@ class TokenInterceptor implements http_interceptor.InterceptorContract {
           throw const MatiUnknownError();
         }
     }
+  }
+
+  @override
+  Future<bool> shouldInterceptRequest() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> shouldInterceptResponse() {
+    throw UnimplementedError();
   }
 }
