@@ -11,6 +11,7 @@ class MatiErrorResponse extends MatiResponse {
     required this.name,
     required this.status,
     required this.statusCode,
+    this.documentError,
   });
 
   /// Creates a [MatiErrorResponse] from a [Map].
@@ -47,6 +48,9 @@ class MatiErrorResponse extends MatiResponse {
   /// The error status code.
   final int statusCode;
 
+  ///
+  final DocumentError? documentError;
+
   @override
   List<Object?> get props {
     return [
@@ -55,7 +59,25 @@ class MatiErrorResponse extends MatiResponse {
       name,
       status,
       statusCode,
+      documentError,
     ];
+  }
+
+  ///
+  static List<Error> findErrorsFromDocument(
+    MatiWebhookResourceData responseData,
+  ) {
+    final errors = <Error>[];
+
+    for (final document in responseData.documents!) {
+      for (final stepError in document.steps!) {
+        if (stepError.error != null) {
+          errors.add(stepError.error!);
+        }
+      }
+    }
+
+    return errors;
   }
 }
 

@@ -15,6 +15,7 @@ class MatiWebhookResourceData extends MatiResponse with EquatableMixin {
     required this.computed,
     required this.id,
     required this.hasProblem,
+    this.error = const [],
   });
 
   factory MatiWebhookResourceData.fromMap(Map<dynamic, dynamic> json) =>
@@ -47,6 +48,19 @@ class MatiWebhookResourceData extends MatiResponse with EquatableMixin {
         id: json['id'] as String?,
       );
 
+  factory MatiWebhookResourceData.generateObjectWithErrors(List<Error> error) =>
+      MatiWebhookResourceData(
+        expired: true,
+        deviceFingerprint: null,
+        identity: null,
+        steps: null,
+        documents: null,
+        computed: null,
+        id: null,
+        hasProblem: true,
+        error: error,
+      );
+
   final bool expired;
   final DeviceFingerprint? deviceFingerprint;
   final Identity? identity;
@@ -55,6 +69,7 @@ class MatiWebhookResourceData extends MatiResponse with EquatableMixin {
   final bool hasProblem;
   final Computed? computed;
   final String? id;
+  final List<Error> error;
 
   String? get capitalizedName {
     final value = documents
@@ -423,38 +438,17 @@ class DocumentStep extends Equatable {
         id: json['id'] as String?,
         error: json['error'] == null
             ? null
-            : MatiError.fromMap(json['error'] as Map),
+            : Error.fromJson(json['error'] as Map<String, dynamic>),
         data: json['data'] == null ? null : Fields.fromMap(json['data'] as Map),
       );
 
   final int? status;
   final String? id;
-  final MatiError? error;
+  final Error? error;
   final Fields? data;
 
   @override
   List<Object?> get props => [status, id, error, data];
-}
-
-class MatiError extends Equatable {
-  const MatiError({
-    this.type,
-    this.code,
-    this.message,
-  });
-
-  factory MatiError.fromMap(Map<dynamic, dynamic> json) => MatiError(
-        type: json['type'] as String?,
-        code: json['code'] as String?,
-        message: json['message'] as String?,
-      );
-
-  final String? type;
-  final String? code;
-  final String? message;
-
-  @override
-  List<Object?> get props => [type, code, message];
 }
 
 class Identity extends Equatable {
@@ -493,12 +487,12 @@ class MatiWebhookResourceDataStep extends Equatable {
                     : null,
         error: json['error'] == null
             ? null
-            : MatiError.fromMap(json['error'] as Map),
+            : Error.fromJson(json['error'] as Map<String, dynamic>),
       );
   final int? status;
   final String? id;
   final StepData? data;
-  final MatiError? error;
+  final Error? error;
 
   @override
   List<Object?> get props => [status, id, data, error];
@@ -559,14 +553,48 @@ class StepData extends Equatable {
   }
 }
 
-class DocumentError {
+// ignore: must_be_immutable
+class DocumentError extends Error {
   DocumentError({
+    required this.type,
+    required this.code,
+    required this.message,
+  }) : super(
+          type: type,
+          code: code,
+          message: message,
+        );
+
+  factory DocumentError.fromJson(Map<String, dynamic> json) => DocumentError(
+        type: json['type'] as String,
+        code: json['code'] as String,
+        message: json['message'] as String,
+      );
+
+  @override
+  String type;
+  @override
+  String code;
+  @override
+  String message;
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'code': code,
+        'message': message,
+      };
+}
+
+// ignore: must_be_immutable
+class Error extends Equatable {
+  Error({
     required this.type,
     required this.code,
     required this.message,
   });
 
-  factory DocumentError.fromJson(Map<String, dynamic> json) => DocumentError(
+  factory Error.fromJson(Map<String, dynamic> json) => Error(
         type: json['type'] as String,
         code: json['code'] as String,
         message: json['message'] as String,
@@ -581,4 +609,7 @@ class DocumentError {
         'code': code,
         'message': message,
       };
+
+  @override
+  List<Object?> get props => [type, code, message];
 }

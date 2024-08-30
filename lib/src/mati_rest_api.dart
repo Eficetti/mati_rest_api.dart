@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http_interceptor.dart' as http_interceptor;
@@ -80,6 +82,24 @@ class MatiRestApi implements MatiRestApiBase {
     );
 
     final body = jsonDecode(response.body) as Map?;
+
+    if (body?['hasProblem'] == true) {
+      final mapped = MatiWebhookResourceData.fromMap(body!);
+      final errorList = <Error>[];
+
+      errorList.addAll(MatiErrorResponse.findErrorsFromDocument(mapped));
+      for (final document in mapped.documents ?? []) {
+        if (document.error != null) {
+          errorList.add(document.error as Error);
+        }
+      }
+
+      final generatedObject = MatiWebhookResourceData.generateObjectWithErrors(
+        errorList,
+      );
+
+      return generatedObject;
+    }
 
     switch (response.statusCode) {
       case 200:
