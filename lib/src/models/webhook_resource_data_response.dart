@@ -100,6 +100,7 @@ class MatiWebhookResourceData extends MatiResponse with EquatableMixin {
       hasProblem,
       computed,
       id,
+      error,
     ];
   }
 }
