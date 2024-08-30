@@ -273,6 +273,7 @@ class Document extends Equatable {
     this.steps,
     this.fields,
     this.photos,
+    this.error,
   });
 
   factory Document.fromMap(Map<dynamic, dynamic> json) => Document(
@@ -289,6 +290,11 @@ class Document extends Equatable {
             ? null
             : Fields.fromMap(json['fields'] as Map),
         photos: (json['photos'] as List?)?.cast<String>(),
+        error: json['error'] == null
+            ? null
+            : DocumentError.fromJson(
+                json['error'] as Map<String, dynamic>,
+              ),
       );
 
   final String? country;
@@ -296,6 +302,7 @@ class Document extends Equatable {
   final List<DocumentStep>? steps;
   final Fields? fields;
   final List<String>? photos;
+  final DocumentError? error;
 
   @override
   List<Object?> get props {
@@ -305,6 +312,7 @@ class Document extends Equatable {
       steps,
       fields,
       photos,
+      error,
     ];
   }
 }
@@ -549,4 +557,28 @@ class StepData extends Equatable {
       safe,
     ];
   }
+}
+
+class DocumentError {
+  DocumentError({
+    required this.type,
+    required this.code,
+    required this.message,
+  });
+
+  factory DocumentError.fromJson(Map<String, dynamic> json) => DocumentError(
+        type: json['type'] as String,
+        code: json['code'] as String,
+        message: json['message'] as String,
+      );
+
+  String type;
+  String code;
+  String message;
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'code': code,
+        'message': message,
+      };
 }
